@@ -49,6 +49,7 @@ public class NotificationPreferenceService {
     }
 
     public NotificationPreference getByUserId(UUID userId) {
-        return this.preferenceRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("Preference for this user was not found"));
+        return this.preferenceRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Preference for this user was not found"));
     }
 }
