@@ -57,6 +57,12 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @PutMapping
+    public ResponseEntity<Void> retryFailedNotifications(@RequestParam(value = "userId") UUID userId) {
+        this.notificationService.retryFailed(userId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
 
 
 

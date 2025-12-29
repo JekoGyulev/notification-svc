@@ -56,13 +56,7 @@ public class NotificationService {
         mailMessage.setTo(notificationPreference.getContactInfo());
 
 
-        try {
-            this.mailSender.send(mailMessage);
-            notification.setStatus(NotificationStatus.SUCCEEDED);
-        } catch (Exception e ) {
-            log.error("Failed email due to : %s".formatted(e.getMessage()));
-            notification.setStatus(NotificationStatus.FAILED);
-        }
+        sendEmail(mailMessage, notification);
 
         return this.notificationRepository.save(notification);
     }
@@ -83,4 +77,51 @@ public class NotificationService {
 
         log.info("Successfully deleted emails of user with ID [%s]".formatted(userId));
     }
+
+    public void retryFailed(UUID userId) {
+        NotificationPreference preference = this.notificationPreferenceService.getByUserId(userId);
+
+        if (!preference.isEnabled()) {
+            throw new IllegalStateException("Notification preference is disabled");
+        }
+
+        List<Notification> failedNotifications = getHistoryByUserId(userId).stream()
+                .filter(n -> n.getStatus() == NotificationStatus.FAILED)
+                .toList();
+
+
+
+
+        failedNotifications.forEach(notification -> {
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setSubject(notification.getSubject());
+            message.setText(notification.getBody());
+            message.setTo(preference.getContactInfo());
+
+            sendEmail(message, notification);
+        });
+
+
+
+    }
+
+
+
+    private void sendEmail(SimpleMailMessage mailMessage, Notification notification) {
+        try {
+            this.mailSender.send(mailMessage);
+            notification.setStatus(NotificationStatus.SUCCEEDED);
+        } catch (Exception e ) {
+            log.error("Failed email due to : %s".formatted(e.getMessage()));
+            notification.setStatus(NotificationStatus.FAILED);
+        }
+    }
+
+
+
+
+
+
+
 }
