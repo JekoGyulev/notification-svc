@@ -54,8 +54,7 @@ public class NotificationController {
     public ResponseEntity<Void> deleteNotification(@RequestParam("userId") UUID userId) {
 
         this.notificationService.deleteAll(userId);
-
-        return ResponseEntity.ok().body("Notifications for user ID [%s] were successfully deleted".formatted(userId));
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
