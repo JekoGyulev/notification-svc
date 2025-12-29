@@ -72,4 +72,15 @@ public class NotificationService {
                 .stream()
                 .filter(notification -> !notification.isDeleted()).toList();
     }
+
+    public void deleteAll(UUID userId) {
+        List<Notification> emailsToDelete = getHistoryByUserId(userId);
+
+        emailsToDelete.forEach(notification -> {
+            notification.setDeleted(true);
+            this.notificationRepository.save(notification);
+        });
+
+        log.info("Successfully deleted emails of user with ID [%s]".formatted(userId));
+    }
 }

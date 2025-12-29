@@ -49,4 +49,17 @@ public class NotificationController {
                 .status(HttpStatus.CREATED)
                 .body(DtoMapper.from(notification));
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteNotification(@RequestParam("userId") UUID userId) {
+
+        this.notificationService.deleteAll(userId);
+
+        return ResponseEntity.ok().body("Notifications for user ID [%s] were successfully deleted".formatted(userId));
+    }
+
+
+
+
+
 }
